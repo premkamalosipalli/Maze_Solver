@@ -1,10 +1,9 @@
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
-#include <iomanip> // std:setprecision
+#include <iomanip>
 #include <ctime>
 #include "Position.h"
-
 
 int **mazeVisited;
 int ROW;
@@ -40,6 +39,7 @@ void getInputMaze(char *fileName)
     int col = 0;
     int switched = 0;
 
+    //Reading the file using fopen.
     FILE *inputMazeFile = fopen(fileName, "r");
 
     if (inputMazeFile)
@@ -91,6 +91,7 @@ void getInputMaze(char *fileName)
 
             recursiveMaze[i][j] = c;
 
+            //Stroring the start and end vertex of the maze.
             if (c == 's')
             {
                 mazeEntrance.x = i;
@@ -105,6 +106,7 @@ void getInputMaze(char *fileName)
     fclose(inputMazeFile);
 }
 
+//Creating a maze to check whether we have visited the wall or not.
 void allocateVisited()
 {
 	mazeVisited = new int*[ROW];
@@ -114,6 +116,7 @@ void allocateVisited()
 	}
 }
 
+//Checking the path by visiting every wall and find the path.
 void initializeVisited()
 {
 	allocateVisited();
@@ -132,6 +135,7 @@ void initializeVisited()
 	}
 }
 
+//Generate the maze from the input taken.
 void generateMaze()
 {
     int i, j;
@@ -146,6 +150,7 @@ void generateMaze()
     std::cout << "\n";
 }
 
+//Adding path with (.) from start to end.
 void addCrumbs()
 {
 	int i, j;
@@ -160,7 +165,8 @@ void addCrumbs()
 	}
 }
 
-int dfs(int row, int col)
+//Fucntion used to find the path for the given Maze.
+int rMazeSearch(int row, int col)
 {
 	int* current = &mazeVisited[row][col];
 
@@ -171,19 +177,23 @@ int dfs(int row, int col)
 	if (*current == empty) {
 		*current = wall;
 
-		if (dfs(row + 1, col)){
-			*current = crumb;
-			return 1;
-		} 
-		if (dfs(row, col - 1)){
-			*current = crumb;
-			return 1;
-		} 
-		if (dfs(row - 1, col)){
+        // Mark this position as explored, then go up one position
+		if (rMazeSearch(row - 1, col)){
 			*current = crumb;
 			return 1;		
 		} 
-		if (dfs(row, col + 1)){
+        // Mark this position as explored, then go right one position
+		if (rMazeSearch(row, col + 1)){
+			*current = crumb;
+			return 1;
+		}
+        // Mark this position as explored, then go down one position
+		if (rMazeSearch(row + 1, col)){
+			*current = crumb;
+			return 1;
+		} 
+        // Mark this position as explored, then go left one position
+		if (rMazeSearch(row, col - 1)){
 			*current = crumb;
 			return 1;
 		}
@@ -194,25 +204,36 @@ int dfs(int row, int col)
 
 int main()
 {
+    //Creating Clock variables to calculate the time taken to generate maze.
     clock_t start, stop;
     double totalTime;
 
+    //Reading input from a file.
     char *intputMaze = (char *)"maze.txt";
+
+    //Creating a maze from the input given.
     getInputMaze(intputMaze);
     initializeVisited();
 
+    //Generating the maze and taking this as inital maze.
     std::cout << "Initial Maze: " << std::endl;
     generateMaze();
 
+    //Start clock begin at this time.
     start = clock();
-    if (!dfs(mazeEntrance.x, mazeEntrance.y)) {
+    if (!rMazeSearch(mazeEntrance.x, mazeEntrance.y)) {
     	printf("Dint find a path form source to destination");
     } else {
+
+        //Adding path from the start to destination for the maze.
     	addCrumbs();
         std::cout << "\nMaze Traversal: " << std::endl;
     	generateMaze();
     }
+    //Stop clock end at the time.
     stop = clock();
+
+    //Calculating the time difference from start to end of maze search.
     totalTime = (stop - start) / (double)CLOCKS_PER_SEC;
     std::cout << "Time taken to Recursive Maze:  " << std::fixed << std::setprecision(2) << totalTime * 1000 << " ms " << std::endl;
     return 0;
