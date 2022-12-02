@@ -210,11 +210,6 @@ void MazeSearch::printPath()
     for (int i = 0; i < finalSize; i++)
     {
         Position temp = rightPath[i];
-    }
-
-    for (int i = 0; i < finalSize; i++)
-    {
-        Position temp = rightPath[i];
         for (int a = 0; a < ROW; a++)
         {
             for (int b = 0; b < COLUMN; b++)
