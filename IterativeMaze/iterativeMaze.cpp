@@ -1,14 +1,13 @@
-// Main function
-
 #include <iostream>
 #include <unistd.h>
-#include <iomanip> // std:setprecision
+#include <iomanip> 
 #include <ctime>
 #include "Stack.h"
 #include "Position.h"
 
 using namespace std;
 
+//Storing the charcter constants to generate maze.
 const char ENTRANCE = 's';
 const char EXIT = 'g';
 const char WALL = '+';
@@ -28,18 +27,19 @@ char mazeDisplay[ROW][COLUMN];
 
 Stack path(ROW *COLUMN);
 
+//Taking input as character matrix.
 char maze[ROW][COLUMN] =
     {
 "++++++++++++++++++++",
 "+                  +",
-"+   + ++++ + +++++s+",
+"+  s+ ++++ + +++++ +",
 "+ + +++ ++ + ++ ++ +",
 "+ +   +    + ++    +",
 "+ +++ ++++++ +++++++",
 "+   +     ++ + +   +",
 "+ +++++++ ++ + + +g+",
 "+ +       ++ +   + +",
-"++++++++++++ +++++ +",
+"+ ++++++++++ +++++ +",
 "+                  +",
 "++++++++++++++++++++",
 };
@@ -48,7 +48,6 @@ class MazeSearch
 {
 public:
     void ImazeSearch();
-    void outputMaze();
     void printPath();
     void printMaze();
     void enterMaze();
@@ -60,30 +59,39 @@ int main()
 {
     MazeSearch mazeGeneration;
 
+    //Creating Clock variables to calculate the time taken to generate maze.
     clock_t start, stop;
     double totalTime;
 
+    //Creating a maze from the input given.
     mazeGeneration.enterMaze();
 
     mazeGeneration.copyMaze();
-    mazeGeneration.stepPath();
 
+    //Generating the maze and taking this as inital maze.
     cout << "Initial Maze: " << endl;
     mazeGeneration.printMaze();
 
+    //Start clock begin at this time.
     start = clock();
     mazeGeneration.ImazeSearch();
+
+    //Adding path from the start to destination for the maze.
     mazeGeneration.printPath();
 
     cout << "\nMaze Traversal: " << endl;
-    mazeGeneration.outputMaze();
+    mazeGeneration.printMaze();
+
+    //Stop clock end at the time.
     stop = clock();
 
+    //Calculating the time difference from start to end of maze search.
     totalTime = (stop - start) / (double)CLOCKS_PER_SEC;
     cout << "Time taken to Iterative Maze:  " << fixed << setprecision(2) << totalTime * 1000 << " ms " << endl;
     return 0;
 }
 
+//This function is used to traverse the maze.
 void MazeSearch::ImazeSearch()
 {
     currentPosition = mazeEntrance;
@@ -149,6 +157,7 @@ void MazeSearch::ImazeSearch()
     }
 }
 
+//This method is to crate copy for the input maze.
 void MazeSearch::copyMaze()
 {
 
@@ -162,29 +171,7 @@ void MazeSearch::copyMaze()
     }
 }
 
-void MazeSearch::stepPath()
-{
-    for (int i = 0; i < finalSize; i++)
-    {
-        cout << "Maze" << endl;
-        Position tempPosition = rightPath[i];
-        mazeDisplay[tempPosition.x][tempPosition.y] = '*';
-
-        for (int a = 0; a < ROW; a++)
-        {
-            for (int b = 0; b < COLUMN; b++)
-            {
-                cout << mazeDisplay[a][b];
-            }
-            cout << endl;
-        }
-
-        usleep(200);
-        system("clear");
-        mazeDisplay[tempPosition.x][tempPosition.y] = ' ';
-    }
-}
-
+//Method used to enter the maze with start location.
 void MazeSearch::enterMaze()
 {
     for (int a = 0; a < ROW; a++)
@@ -204,6 +191,7 @@ void MazeSearch::enterMaze()
     }
 }
 
+//Method used to print the maze.
 void MazeSearch::printMaze()
 {
     for (int a = 0; a < ROW; a++)
@@ -216,6 +204,7 @@ void MazeSearch::printMaze()
     }
 }
 
+//Method used to print path with (.) from start to end.
 void MazeSearch::printPath()
 {
     for (int i = 0; i < finalSize; i++)
@@ -241,18 +230,4 @@ void MazeSearch::printPath()
             }
         }
     }
-}
-
-void MazeSearch::outputMaze()
-{
-    for (int a = 0; a < ROW; a++)
-    {
-        for (int b = 0; b < COLUMN; b++)
-        {
-            cout << maze[a][b];
-        }
-        cout << endl;
-    }
-
-    cout << endl;
 }
